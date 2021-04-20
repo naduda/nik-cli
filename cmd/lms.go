@@ -6,10 +6,12 @@ import (
 	"github.com/spf13/cobra"
 	"io/ioutil"
 	"net/http"
+	"nik-cli/gpee"
 	"nik-cli/lms"
 	"nik-cli/lms/scheduler"
 	"nik-cli/server"
 	"strings"
+	"time"
 )
 
 var serverPort int
@@ -96,12 +98,26 @@ var testCmd = &cobra.Command{
 	},
 }
 
+var excelCmd = &cobra.Command{
+	Use:   "excel",
+	Short: "short fot excel",
+	Run: func(cmd *cobra.Command, args []string) {
+		d := time.Now().Add(-24 * time.Hour)
+		data, err := gpee.HistoryPerDate("login", "password", "stationId", d.Format("02.01.2006"))
+		if err != nil {
+			panic(err.Error())
+		}
+		lms.MakeExcelFile(d.Format("2006-01-02"), data)
+	},
+}
+
 func init() {
 	startCmd.PersistentFlags().IntVar(&serverPort, "port", 8485, "Http server's port")
 	lmsCmd.PersistentFlags().StringVar(&schedulerStartAt, "at", "", "Start schedule at HH:mm")
 	lmsCmd.PersistentFlags().StringVarP(&schedulerEvery, "every", "e", "", "Start schedule every 1h, 1m, 1s, 1ms")
 	lmsCmd.PersistentFlags().StringVarP(&lmsLogin, "login", "l", "", "Lms login")
 	lmsCmd.PersistentFlags().StringVarP(&lmsPassword, "password", "p", "", "Lms login")
+	lmsCmd.AddCommand(excelCmd)
 	lmsCmd.AddCommand(startCmd)
 	lmsCmd.AddCommand(testCmd)
 	RootCmd.AddCommand(lmsCmd)
