@@ -10,7 +10,7 @@ import (
 
 var Url = "https://lms.ua.energy"
 
-func (lms *Lms) Login(name, psw string) ([]*http.Cookie, error) {
+func (l *Lms) Login(name, psw string) ([]*http.Cookie, error) {
 	cookies, token, err := getToken()
 	if err != nil {
 		return nil, err

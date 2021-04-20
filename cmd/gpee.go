@@ -7,9 +7,6 @@ import (
 )
 
 var readDate string
-var gpeeLogin string
-var gpeePassword string
-var gpeeStationId string
 
 var gpeeCmd = &cobra.Command{
 	Use:   "gpee",
