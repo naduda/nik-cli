@@ -18,15 +18,10 @@ const (
 )
 
 //goland:noinspection GoNilness
-func HistoryPerDate(login, password, stationId, date string) ([]model.HistoryDataRow, error) {
+func (g *Gpee) HistoryPerDate(stationId, date string) ([]model.HistoryDataRow, error) {
 	var res []model.HistoryDataRow
 
-	cookies, err := Login(login, password)
-	if err != nil {
-		return res, err
-	}
-
-	rows, err := historyList(date, cookies, false)
+	rows, err := historyList(date, g.Cookies, false)
 	if err != nil {
 		return res, err
 	}
@@ -35,7 +30,7 @@ func HistoryPerDate(login, password, stationId, date string) ([]model.HistoryDat
 		if r.Id != stationId {
 			continue
 		}
-		histData, err := historyData(r.Id, r.Code, date, cookies, false)
+		histData, err := historyData(r.Id, r.Code, date, g.Cookies, false)
 		if err != nil {
 			return res, err
 		}
@@ -50,7 +45,7 @@ func HistoryPerDate(login, password, stationId, date string) ([]model.HistoryDat
 		}
 	}
 
-	rows, err = historyList(date, cookies, true)
+	rows, err = historyList(date, g.Cookies, true)
 	if err != nil {
 		return res, err
 	}
@@ -60,7 +55,7 @@ func HistoryPerDate(login, password, stationId, date string) ([]model.HistoryDat
 		if r.Id != stationId {
 			continue
 		}
-		histData, err := historyData(r.Id, r.Code, date, cookies, true)
+		histData, err := historyData(r.Id, r.Code, date, g.Cookies, true)
 		if err != nil {
 			return res, err
 		}

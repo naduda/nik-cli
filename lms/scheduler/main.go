@@ -1,37 +1,46 @@
 package scheduler
 
 import (
-	"errors"
 	"fmt"
 	"github.com/go-co-op/gocron"
+	"log"
+	"nik-cli/logger"
 	"strconv"
 	"strings"
 	"time"
 )
 
+var Log *log.Logger
+
 func Run(every, at string) {
-	s := gocron.NewScheduler(time.UTC)
-	s.Every(every)
-	atTime := startAtTime(at)
-	fmt.Println(atTime)
-	s.StartAt(atTime)
-	_, err := s.Do(func() {
-		if err := testJob(); err != nil {
-			fmt.Println(err.Error())
-		}
-	})
+	logfile := fmt.Sprintf("./%s.log", time.Now().Format("2006_01_02"))
+	Log, err := logger.InitLogger(logfile)
 	if err != nil {
 		panic(err.Error())
 	}
-	s.StartAsync()
-}
 
-func testJob() error {
-	fmt.Println("scheduler works")
-	if time.Now().Minute() == 31 {
-		return errors.New("some error")
+	s := gocron.NewScheduler(time.UTC)
+	s.Every(every)
+	atTime := startAtTime(at)
+	s.StartAt(atTime)
+
+	conf, err := getConfig()
+	if err != nil {
+		Log.Printf("config: %s\n", err.Error())
+		panic(err.Error())
 	}
-	return nil
+
+	_, err = s.Do(func() {
+		if err := syncJob(conf); err != nil {
+			Log.Printf("config: %s\n", err.Error())
+		}
+	})
+
+	if err != nil {
+		Log.Printf("scheduler: %s\n", err.Error())
+		panic(err.Error())
+	}
+	s.StartAsync()
 }
 
 func startAtTime(at string) time.Time {

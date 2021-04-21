@@ -17,7 +17,11 @@ var readCmd = &cobra.Command{
 	Use:   "read",
 	Short: "short fot read",
 	Run: func(cmd *cobra.Command, args []string) {
-		data, err := gpee.HistoryPerDate(gpeeLogin, gpeePassword, gpeeStationId, readDate)
+		inst, err := gpee.NewGpee(gpeeLogin, gpeePassword)
+		if err != nil {
+			panic(err.Error())
+		}
+		data, err := inst.HistoryPerDate(gpeeStationId, readDate)
 		if err == nil {
 			for _, v := range data {
 				fmt.Println(v.Date, v.Hour, v.E)
