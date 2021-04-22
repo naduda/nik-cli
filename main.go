@@ -21,6 +21,7 @@ func (p *program) Stop(s service.Service) error {
 	return nil
 }
 
+// GOOS=windows GOARCH=386 go build -o nik-cli.exe .
 func main() {
 	//svcConfig := &service.Config{
 	//	Name:        "nik",

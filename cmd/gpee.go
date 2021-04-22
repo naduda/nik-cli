@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"nik-cli/gpee"
+	"strconv"
 )
 
 var readDate string
@@ -21,7 +22,8 @@ var readCmd = &cobra.Command{
 		if err != nil {
 			panic(err.Error())
 		}
-		data, err := inst.HistoryPerDate(gpeeStationId, readDate)
+		gpeeId := strconv.Itoa(gpeeStationId)
+		data, err := inst.HistoryPerDate(gpeeId, readDate)
 		if err == nil {
 			for _, v := range data {
 				fmt.Println(v.Date, v.Hour, v.E)
@@ -34,7 +36,7 @@ func init() {
 	readCmd.PersistentFlags().StringVarP(&readDate, "date", "d", "", "Date of gpee history")
 	readCmd.PersistentFlags().StringVarP(&gpeeLogin, "login", "l", "", "Gpee login")
 	readCmd.PersistentFlags().StringVarP(&gpeePassword, "password", "p", "", "Gpee password")
-	readCmd.PersistentFlags().StringVar(&gpeeStationId, "id", "", "Gpee station id")
+	readCmd.PersistentFlags().IntVar(&gpeeStationId, "id", 0, "Gpee station id")
 	gpeeCmd.AddCommand(readCmd)
 	RootCmd.AddCommand(gpeeCmd)
 }
