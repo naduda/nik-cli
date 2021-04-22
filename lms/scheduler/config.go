@@ -7,8 +7,8 @@ import (
 	"os"
 )
 
-func getConfig() (model.LmsConfig, error) {
-	var conf model.LmsConfig
+func getConfig() ([]model.ConfigLms, error) {
+	var conf []model.ConfigLms
 	jsonFile, err := os.Open("config.json")
 	if err != nil {
 		return conf, err

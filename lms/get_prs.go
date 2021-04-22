@@ -3,6 +3,7 @@ package lms
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"nik-cli/lms/model"
 )
@@ -31,7 +32,7 @@ func (l *Lms) Get(date string, id int) (model.GetResponse, error) {
 
 	err = json.NewDecoder(resp.Body).Decode(&res)
 	if err != nil {
-		return res, err
+		return res, errors.New("lms: check your login/password")
 	}
 
 	return res, nil

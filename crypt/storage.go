@@ -16,7 +16,7 @@ type Storage struct {
 	encodingKey string
 	filepath    string
 	mutex       sync.Mutex
-	Data        model.LmsConfig
+	Data        []model.ConfigLms
 }
 
 func NewStorage(encodingKey, filepath string) *Storage {
@@ -29,7 +29,7 @@ func NewStorage(encodingKey, filepath string) *Storage {
 func (v *Storage) Load() error {
 	f, err := os.Open(v.filepath)
 	if err != nil {
-		v.Data = model.LmsConfig{}
+		v.Data = []model.ConfigLms{}
 		return nil
 	}
 	//goland:noinspection GoUnhandledErrorResult

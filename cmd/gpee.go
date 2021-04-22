@@ -11,12 +11,12 @@ var readDate string
 
 var gpeeCmd = &cobra.Command{
 	Use:   "gpee",
-	Short: "short fot gpee",
+	Short: "https://lms.ua.energy/",
 }
 
 var readCmd = &cobra.Command{
 	Use:   "read",
-	Short: "short fot read",
+	Short: "Read data by date",
 	Run: func(cmd *cobra.Command, args []string) {
 		inst, err := gpee.NewGpee(gpeeLogin, gpeePassword)
 		if err != nil {

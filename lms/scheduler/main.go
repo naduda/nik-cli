@@ -31,9 +31,7 @@ func Run(every, at string) {
 	}
 
 	_, err = s.Do(func() {
-		if err := syncJob(conf); err != nil {
-			Log.Printf("config: %s\n", err.Error())
-		}
+		syncJob(conf, Log)
 	})
 
 	if err != nil {
@@ -44,6 +42,9 @@ func Run(every, at string) {
 }
 
 func startAtTime(at string) time.Time {
+	if at == "" {
+		return time.Now().Add(1 * time.Second)
+	}
 	atArr := strings.Split(at, ":")
 	n := time.Now().Add(1 * time.Second)
 	if len(atArr) != 2 {
