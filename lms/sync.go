@@ -28,5 +28,6 @@ func Sync(lmsDate, lmsLogin, lmsPassword, gpeeLogin, gpeePassword, gpeeStationId
 	if err != nil {
 		return err
 	}
-	return inst.Put(date, lmsStationId, r.Prs.Version, data)
+
+	return inst.Put(date, lmsStationId, r.Prs.Version, data, r.Prs.Body)
 }

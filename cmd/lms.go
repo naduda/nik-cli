@@ -12,6 +12,7 @@ import (
 
 var schedulerStartAt string
 var schedulerEvery string
+var schedulerEveryTomorrow string
 var lmsLogin string
 var lmsPassword string
 var lmsStationId int
@@ -33,9 +34,17 @@ var startCmd = &cobra.Command{
 	Use:   "start",
 	Short: "Start periodically sync",
 	Run: func(cmd *cobra.Command, args []string) {
-		go func() {
-			scheduler.Run(schedulerEvery, schedulerStartAt, cfgPassword)
-		}()
+		if schedulerEveryTomorrow != "" {
+			go func() {
+				scheduler.Run(schedulerEveryTomorrow, schedulerStartAt, cfgPassword, true)
+			}()
+		}
+		if schedulerEvery != "" {
+			go func() {
+				scheduler.Run(schedulerEvery, schedulerStartAt, cfgPassword, false)
+			}()
+		}
+
 		<-StopCh
 		//server := server.NewInstance(serverPort, true)
 		//lms.InitHandlers(&server)
@@ -98,7 +107,8 @@ var printCfgCmd = &cobra.Command{
 func init() {
 	//startCmd.PersistentFlags().IntVar(&serverPort, "port", 8485, "Http server's port")
 	startCmd.PersistentFlags().StringVar(&schedulerStartAt, "at", "", "(Optional) Start schedule at HH:mm")
-	startCmd.PersistentFlags().StringVarP(&schedulerEvery, "every", "e", "", "Start schedule every 1h, 1m, 1s, 1ms")
+	startCmd.PersistentFlags().StringVarP(&schedulerEvery, "every", "e", "", "Start schedule every 1h, 1m, 1s, 1ms for today")
+	startCmd.PersistentFlags().StringVar(&schedulerEveryTomorrow, "et", "", "Start schedule every 1h, 1m, 1s, 1ms for tomorrow")
 	startCmd.PersistentFlags().StringVar(&cfgPassword, "cp", "12345678", "Password for encrypt/decrypt configuration file")
 	lmsCmd.AddCommand(startCmd)
 

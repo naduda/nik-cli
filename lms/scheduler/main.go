@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func Run(every, at, psw string) {
+func Run(every, at, psw string, tomorrow bool) {
 	logfile := fmt.Sprintf("./%s.log", time.Now().Format("2006_01_02"))
 	Log, err := logger.InitLogger(logfile)
 	if err != nil {
@@ -29,7 +29,7 @@ func Run(every, at, psw string) {
 	}
 
 	_, err = s.Do(func() {
-		syncJob(st.Data, Log)
+		syncJob(st.Data, Log, tomorrow)
 	})
 	if err != nil {
 		Log.Printf("scheduler: %s\n", err.Error())
