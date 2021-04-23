@@ -11,4 +11,5 @@ type ConfigId struct {
 	Gpee  int    `json:"gpee"`
 	Login string `json:"login"`
 	Psw   string `json:"psw"`
+	Name  string `json:"name"`
 }

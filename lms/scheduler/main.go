@@ -3,16 +3,14 @@ package scheduler
 import (
 	"fmt"
 	"github.com/go-co-op/gocron"
-	"log"
+	"nik-cli/crypt"
 	"nik-cli/logger"
 	"strconv"
 	"strings"
 	"time"
 )
 
-var Log *log.Logger
-
-func Run(every, at string) {
+func Run(every, at, psw string) {
 	logfile := fmt.Sprintf("./%s.log", time.Now().Format("2006_01_02"))
 	Log, err := logger.InitLogger(logfile)
 	if err != nil {
@@ -24,20 +22,20 @@ func Run(every, at string) {
 	atTime := startAtTime(at)
 	s.StartAt(atTime)
 
-	conf, err := getConfig()
-	if err != nil {
+	st := crypt.NewStorage(psw, "config.cfg")
+	if err := st.Load(); err != nil {
 		Log.Printf("config: %s\n", err.Error())
 		panic(err.Error())
 	}
 
 	_, err = s.Do(func() {
-		syncJob(conf, Log)
+		syncJob(st.Data, Log)
 	})
-
 	if err != nil {
 		Log.Printf("scheduler: %s\n", err.Error())
 		panic(err.Error())
 	}
+
 	s.StartAsync()
 }
 

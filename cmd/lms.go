@@ -7,11 +7,9 @@ import (
 	"nik-cli/crypt"
 	"nik-cli/lms"
 	"nik-cli/lms/scheduler"
-	"nik-cli/lms/scheduler/model"
 	"strconv"
 )
 
-var serverPort int
 var schedulerStartAt string
 var schedulerEvery string
 var lmsLogin string
@@ -22,12 +20,13 @@ var gpeePassword string
 var gpeeStationId int
 var lmsDate string
 var cfgPassword string
+var cfgName string
 
 var StopCh = make(chan bool)
 
 var lmsCmd = &cobra.Command{
 	Use:   "lms",
-	Short: "https://www.gpee.com.ua/",
+	Short: "https://lms.ua.energy/",
 }
 
 var startCmd = &cobra.Command{
@@ -35,7 +34,7 @@ var startCmd = &cobra.Command{
 	Short: "Start periodically sync",
 	Run: func(cmd *cobra.Command, args []string) {
 		go func() {
-			scheduler.Run(schedulerEvery, schedulerStartAt)
+			scheduler.Run(schedulerEvery, schedulerStartAt, cfgPassword)
 		}()
 		<-StopCh
 		//server := server.NewInstance(serverPort, true)
@@ -63,39 +62,15 @@ var cfgCmd = &cobra.Command{
 	Short: "Configuration file for lms sync",
 }
 
-var makeCfgCmd = &cobra.Command{
-	Use:   "new",
-	Short: "Create new configuration file",
+var encryptFileCfgCmd = &cobra.Command{
+	Use:   "crypt",
+	Short: "Encrypt configuration file",
 	Run: func(cmd *cobra.Command, args []string) {
-		s := crypt.NewStorage(cfgPassword, "1.cfg")
-		s.Data = []model.ConfigLms{
-			{
-				Login: lmsLogin,
-				Psw:   lmsPassword,
-				Ids:   []model.ConfigId{},
-			},
-		}
-		if err := s.Save(); err != nil {
+		s := crypt.NewStorage(cfgPassword, "config.cfg")
+		if err := s.ReadDataFromFile(cfgName); err != nil {
 			fmt.Printf("cfg: %s\n", err.Error())
+			return
 		}
-	},
-}
-
-var addToCfgCmd = &cobra.Command{
-	Use:   "add",
-	Short: "Add station to configuration file",
-	Run: func(cmd *cobra.Command, args []string) {
-		s := crypt.NewStorage(cfgPassword, "1.cfg")
-		if err := s.Load(); err != nil {
-			fmt.Printf("cfg: %s\n", err.Error())
-		}
-		id := model.ConfigId{
-			Lms:   lmsStationId,
-			Gpee:  gpeeStationId,
-			Login: lmsLogin,
-			Psw:   lmsPassword,
-		}
-		s.Data[0].Ids = append(s.Data[0].Ids, id)
 		if err := s.Save(); err != nil {
 			fmt.Printf("cfg: %s\n", err.Error())
 		}
@@ -106,7 +81,7 @@ var printCfgCmd = &cobra.Command{
 	Use:   "print",
 	Short: "Print configuration file",
 	Run: func(cmd *cobra.Command, args []string) {
-		s := crypt.NewStorage(cfgPassword, "1.cfg")
+		s := crypt.NewStorage(cfgPassword, "config.cfg")
 		if err := s.Load(); err != nil {
 			fmt.Printf("cfg: %s\n", err.Error())
 			return
@@ -121,9 +96,10 @@ var printCfgCmd = &cobra.Command{
 }
 
 func init() {
-	startCmd.PersistentFlags().IntVar(&serverPort, "port", 8485, "Http server's port")
-	startCmd.PersistentFlags().StringVar(&schedulerStartAt, "at", "", "Start schedule at HH:mm")
+	//startCmd.PersistentFlags().IntVar(&serverPort, "port", 8485, "Http server's port")
+	startCmd.PersistentFlags().StringVar(&schedulerStartAt, "at", "", "(Optional) Start schedule at HH:mm")
 	startCmd.PersistentFlags().StringVarP(&schedulerEvery, "every", "e", "", "Start schedule every 1h, 1m, 1s, 1ms")
+	startCmd.PersistentFlags().StringVar(&cfgPassword, "cp", "12345678", "Password for encrypt/decrypt configuration file")
 	lmsCmd.AddCommand(startCmd)
 
 	syncCmd.PersistentFlags().StringVarP(&lmsDate, "date", "d", "", "Date: format = dd.MM.yyyy")
@@ -135,20 +111,12 @@ func init() {
 	syncCmd.PersistentFlags().IntVar(&gpeeStationId, "gpeeId", 0, "Gpee station id")
 	lmsCmd.AddCommand(syncCmd)
 
-	makeCfgCmd.PersistentFlags().StringVarP(&lmsLogin, "login", "l", "", "Lms login")
-	makeCfgCmd.PersistentFlags().StringVarP(&lmsPassword, "password", "p", "", "Lms password")
-	makeCfgCmd.PersistentFlags().StringVar(&cfgPassword, "cp", "12345678", "Password for encrypt/decrypt configuration file")
-	cfgCmd.AddCommand(makeCfgCmd)
-
-	addToCfgCmd.PersistentFlags().StringVarP(&lmsLogin, "login", "l", "", "Lms login")
-	addToCfgCmd.PersistentFlags().StringVarP(&lmsPassword, "password", "p", "", "Lms password")
-	addToCfgCmd.PersistentFlags().IntVar(&lmsStationId, "lms", 0, "Lms station id")
-	addToCfgCmd.PersistentFlags().IntVar(&gpeeStationId, "gpee", 0, "Gpee station id")
-	addToCfgCmd.PersistentFlags().StringVar(&cfgPassword, "cp", "12345678", "Password for encrypt/decrypt configuration file")
-	cfgCmd.AddCommand(addToCfgCmd)
-
 	printCfgCmd.PersistentFlags().StringVar(&cfgPassword, "cp", "12345678", "Password for encrypt/decrypt configuration file")
 	cfgCmd.AddCommand(printCfgCmd)
+
+	encryptFileCfgCmd.PersistentFlags().StringVar(&cfgPassword, "cp", "12345678", "Password for encrypt/decrypt configuration file")
+	encryptFileCfgCmd.PersistentFlags().StringVarP(&cfgName, "name", "n", "", "Destination of the source file")
+	cfgCmd.AddCommand(encryptFileCfgCmd)
 
 	lmsCmd.AddCommand(cfgCmd)
 	RootCmd.AddCommand(lmsCmd)

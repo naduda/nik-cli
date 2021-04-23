@@ -11,7 +11,7 @@ var readDate string
 
 var gpeeCmd = &cobra.Command{
 	Use:   "gpee",
-	Short: "https://lms.ua.energy/",
+	Short: "https://www.gpee.com.ua/",
 }
 
 var readCmd = &cobra.Command{

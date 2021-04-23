@@ -15,9 +15,9 @@ func syncJob(conf []model.ConfigLms, logger *log.Logger) {
 			date := d.Format("02.01.2006")
 			gpeeId := strconv.Itoa(id.Gpee)
 			if err := lms.Sync(date, item.Login, item.Psw, id.Login, id.Psw, gpeeId, id.Lms); err != nil {
-				logger.Printf("sync: stationId = %s, err -> %s\n", gpeeId, err.Error())
+				logger.Printf("sync: %s (%s), err -> %s\n", id.Name, gpeeId, err.Error())
 			} else {
-				logger.Printf("%s - Success!\n", gpeeId)
+				logger.Printf("%s (%s) - Success!\n", id.Name, gpeeId)
 			}
 		}
 	}

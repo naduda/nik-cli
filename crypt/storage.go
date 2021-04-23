@@ -38,10 +38,20 @@ func (v *Storage) Load() error {
 	if err != nil {
 		return err
 	}
-	return v.readKeyValues(r)
+	return v.readData(r)
 }
 
-func (v *Storage) readKeyValues(r io.Reader) error {
+func (v *Storage) ReadDataFromFile(filepath string) error {
+	f, err := os.Open(filepath)
+	if err != nil {
+		return err
+	}
+	//goland:noinspection GoUnhandledErrorResult
+	defer f.Close()
+	return v.readData(f)
+}
+
+func (v *Storage) readData(r io.Reader) error {
 	dec := json.NewDecoder(r)
 	return dec.Decode(&v.Data)
 }
