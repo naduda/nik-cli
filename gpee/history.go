@@ -112,6 +112,7 @@ func historyData(id, code, date string, cookies []*http.Cookie, refresh bool) ([
 		return nil, err
 	}
 	content = content[strings.Index(content, "<table ") : strings.Index(content, "</table>")+8]
+	content = strings.Replace(content, "<br>", "", -1)
 
 	h := model.Table{}
 	err = xml.NewDecoder(bytes.NewBuffer([]byte(content))).Decode(&h)

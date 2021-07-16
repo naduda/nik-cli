@@ -22,6 +22,7 @@ var gpeeStationId int
 var lmsDate string
 var cfgPassword string
 var cfgName string
+var cfgNameOutput string
 
 var StopCh = make(chan bool)
 
@@ -61,7 +62,9 @@ var syncCmd = &cobra.Command{
 		gpeeId := strconv.Itoa(gpeeStationId)
 		err := lms.Sync(lmsDate, lmsLogin, lmsPassword, gpeeLogin, gpeePassword, gpeeId, lmsStationId)
 		if err != nil {
-			panic(err.Error())
+			fmt.Println("error:", err.Error())
+		} else {
+			fmt.Println("OK")
 		}
 	},
 }
@@ -75,7 +78,7 @@ var encryptFileCfgCmd = &cobra.Command{
 	Use:   "crypt",
 	Short: "Encrypt configuration file",
 	Run: func(cmd *cobra.Command, args []string) {
-		s := crypt.NewStorage(cfgPassword, "config.cfg")
+		s := crypt.NewStorage(cfgPassword, cfgNameOutput)
 		if err := s.ReadDataFromFile(cfgName); err != nil {
 			fmt.Printf("cfg: %s\n", err.Error())
 			return
@@ -90,7 +93,7 @@ var printCfgCmd = &cobra.Command{
 	Use:   "print",
 	Short: "Print configuration file",
 	Run: func(cmd *cobra.Command, args []string) {
-		s := crypt.NewStorage(cfgPassword, "config.cfg")
+		s := crypt.NewStorage(cfgPassword, cfgNameOutput)
 		if err := s.Load(); err != nil {
 			fmt.Printf("cfg: %s\n", err.Error())
 			return
@@ -126,6 +129,7 @@ func init() {
 
 	encryptFileCfgCmd.PersistentFlags().StringVar(&cfgPassword, "cp", "12345678", "Password for encrypt/decrypt configuration file")
 	encryptFileCfgCmd.PersistentFlags().StringVarP(&cfgName, "name", "n", "", "Destination of the source file")
+	encryptFileCfgCmd.PersistentFlags().StringVarP(&cfgNameOutput, "output", "o", "config.cfg", "Destination of the encrypted file")
 	cfgCmd.AddCommand(encryptFileCfgCmd)
 
 	lmsCmd.AddCommand(cfgCmd)
