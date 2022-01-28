@@ -133,5 +133,4 @@ func init() {
 	cfgCmd.AddCommand(encryptFileCfgCmd)
 
 	lmsCmd.AddCommand(cfgCmd)
-	RootCmd.AddCommand(lmsCmd)
 }

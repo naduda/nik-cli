@@ -38,5 +38,4 @@ func init() {
 	readCmd.PersistentFlags().StringVarP(&gpeePassword, "password", "p", "", "Gpee password")
 	readCmd.PersistentFlags().IntVar(&gpeeStationId, "id", 0, "Gpee station id")
 	gpeeCmd.AddCommand(readCmd)
-	RootCmd.AddCommand(gpeeCmd)
 }
