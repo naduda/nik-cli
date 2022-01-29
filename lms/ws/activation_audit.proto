@@ -1,0 +1,21 @@
+syntax="proto3";
+import "google/protobuf/timestamp.proto";
+package ws;
+
+option go_package="nik-cli/lms/ws";
+
+message ActivationAudit {
+  int32 apiVersion = 1;
+  Action action = 3;
+  string comment = 4;
+  repeated int32 activationIds = 5;
+  google.protobuf.Timestamp ts = 6;
+
+  enum Action {
+    SEEN = 0;
+    ACCEPTED = 1;
+    DECLINED = 2;
+    PASSED_ON = 3;
+    SEEN_CONFIRMED = 4;
+  }
+}

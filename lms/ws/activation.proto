@@ -1,0 +1,43 @@
+syntax="proto3";
+import "google/protobuf/timestamp.proto";
+package ws;
+
+option go_package="nik-cli/lms/ws";
+
+message Activation {
+  int32 apiVersion = 1;
+  int32 activationId = 2;
+  int32 generationId = 3;
+  string generationName = 4;
+  ActivationState state = 5;
+  google.protobuf.Timestamp activationDatetime = 6;
+  string generationWCode = 7;
+  ActivationKind activationKind = 8;
+  int32 marketAreaId = 9;
+  bool isActivation = 10;
+  int32 volume = 11;
+  int32 dsoId = 12;
+  bool hasReplacedActivation = 15;
+  int32 previousVolume = 16;
+  int32 deltaVolume = 17;
+  google.protobuf.Timestamp initialActivationDatetime = 18;
+  string comment = 19;
+  bool seenByResponsibleUser = 20;
+
+  enum ActivationState {
+    UNKNOWN = 0;
+    PENDING = 1;
+    ACCEPTED = 2;
+    DECLINED = 3;
+    FINISHED = 4;
+    PASSED_ON = 5;
+  }
+
+}
+
+enum ActivationKind {
+    UNKNOWN = 0;
+    MOL = 1;
+    PRIORITY = 2;
+    PROPORTIONAL = 3;
+  }

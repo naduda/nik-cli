@@ -1,0 +1,11 @@
+syntax="proto3";
+import "google/protobuf/timestamp.proto";
+package ws;
+
+option go_package="nik-cli/lms/ws";
+
+message Heartbeat {
+  int32 apiVersion = 1;
+  bool isSuccessful = 2;
+  google.protobuf.Timestamp datetime = 3;
+}
