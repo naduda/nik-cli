@@ -1,0 +1,24 @@
+syntax="proto3";
+
+package ws;
+
+option go_package="nik-cli/lms/ws/protoschema";
+
+message MarketAreaSummary {
+  int32 apiVersion = 1;
+  int32 marketAreaId = 2;
+  int32 generationCountTotal = 3;
+  int32 generationCountOnline = 4;
+  int32 powerPrsTotal = 5;
+  int32 powerPrsOnline = 6;
+  int32 powerNomTotal = 7;
+  int32 powerNomOnline = 8;
+  int32 powerFactTotal = 9;
+  int32 powerFactOnline = 10;
+  int32 powerReserveTotal = 11;
+  int32 powerReserveOnline = 12;
+  int32 powerRefNomTotal = 13;
+  int32 powerRefNomOnline = 14;
+  int32 powerRefFactTotal = 15;
+  int32 powerRefFactOnline = 16;
+}

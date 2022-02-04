@@ -10,3 +10,7 @@ tasks:
   proto:
     cmds:
       - c:\temp\proto\bin\protoc --go_out=. *.proto --go_opt=paths=source_relative
+
+  proto2:
+    cmds:
+      - protoc --go_out=.. *.proto --go_opt=paths=source_relative

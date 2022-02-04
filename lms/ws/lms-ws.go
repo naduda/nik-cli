@@ -7,6 +7,7 @@ import (
 	"github.com/sacOO7/gowebsocket"
 	"log"
 	"net/http"
+	"nik-cli/lms/ws/protoschema"
 	"nik-cli/logger"
 	"os"
 	"os/signal"
@@ -28,14 +29,14 @@ func NewInstance(cookies []*http.Cookie) *LmsWebsocket {
 		cookieString += t + ";"
 	}
 	logfile := fmt.Sprintf("./ws_%s.log", time.Now().Format("2006_01_02"))
-	logger, err := logger.InitLogger(logfile)
+	lmsLogger, err := logger.InitLogger(logfile)
 	if err != nil {
 		log.Fatal(err)
 	}
 	return &LmsWebsocket{
 		Cookies:      cookies,
 		CookieString: cookieString,
-		Logger:       logger,
+		Logger:       lmsLogger,
 	}
 }
 
@@ -63,45 +64,27 @@ func (r *LmsWebsocket) Connect() error {
 	}
 
 	socket.OnBinaryMessage = func(data []byte, socket gowebsocket.Socket) {
-		m := &Message{}
+		m := &protoschema.Message{}
 		if err := proto.Unmarshal(data, m); err != nil {
 			log.Println(err)
 			return
 		}
+		var p proto.Message = nil
 		switch m.GetType() {
-		case Message_HEARTBEAT:
-			heartbeat := &Heartbeat{}
-			if err := proto.Unmarshal(m.GetPayload(), heartbeat); err != nil {
-				log.Println(err)
-				return
-			}
-			//log.Printf("heartbeat: %v\n", heartbeat)
-			jsonHeartbeat, err := json.Marshal(heartbeat)
-			if err != nil {
-				log.Println("json marshal", err.Error())
-			}
-			r.Logger.Println(string(jsonHeartbeat))
-		case Message_ACTIVATION:
-			activation := &Activation{}
-			if err := proto.Unmarshal(m.GetPayload(), activation); err != nil {
-				log.Println(err)
-				return
-			}
-			//log.Printf("activation: %v\n", activation)
-			jsonHeartbeat, err := json.Marshal(activation)
-			if err != nil {
-				log.Println("json marshal", err.Error())
-			}
-			r.Logger.Println(string(jsonHeartbeat))
-		case Message_ACTIVATION_AUDIT:
-			activationAudit := &ActivationAudit{}
-			if err := proto.Unmarshal(m.GetPayload(), activationAudit); err != nil {
-				log.Println(err)
-				return
-			}
-			log.Printf("activationAudit: %v\n", activationAudit)
+		case protoschema.Message_HEARTBEAT:
+			p = &protoschema.Heartbeat{}
+		case protoschema.Message_ACTIVATION:
+		case protoschema.Message_PROPORTIONAL_ACTIVATION:
+			p = &protoschema.Activation{}
+		case protoschema.Message_ACTIVATION_AUDIT:
+			p = &protoschema.ActivationAudit{}
+		case protoschema.Message_MARKET_AREA_SUMMARY:
+			p = &protoschema.MarketAreaSummary{}
 		default:
-			log.Println("Not implement type:", m.GetType())
+			r.Logger.Println("Not implement type:", m.GetType())
+		}
+		if p != nil {
+			r.logMessage(m.GetPayload(), p)
 		}
 	}
 
@@ -119,4 +102,15 @@ func (r *LmsWebsocket) Connect() error {
 			return nil
 		}
 	}
+}
+
+func (r *LmsWebsocket) logMessage(payload []byte, m proto.Message) {
+	if err := proto.Unmarshal(payload, m); err != nil {
+		r.Logger.Println(err)
+	}
+	jsn, err := json.Marshal(m)
+	if err != nil {
+		r.Logger.Println(err)
+	}
+	r.Logger.Println(string(jsn))
 }

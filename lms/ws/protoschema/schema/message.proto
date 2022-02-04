@@ -2,7 +2,7 @@ syntax="proto3";
 
 package ws;
 
-option go_package="nik-cli/lms/ws";
+option go_package="nik-cli/lms/ws/protoschema";
 
 message Message {
   int32 apiVersion = 1;
