@@ -1,8 +1,8 @@
-syntax="proto3";
+syntax = "proto3";
 import "google/protobuf/timestamp.proto";
 package ws;
 
-option go_package="nik-cli/lms/ws/protoschema";
+option go_package = "nik-cli/lms/ws/protoschema";
 
 message Activation {
   int32 apiVersion = 1;
@@ -36,8 +36,8 @@ message Activation {
 }
 
 enum ActivationKind {
-    UNKNOWN = 0;
-    MOL = 1;
-    PRIORITY = 2;
-    PROPORTIONAL = 3;
-  }
+  UNKNOWN = 0;
+  MOL = 1;
+  PRIORITY = 2;
+  PROPORTIONAL = 3;
+}

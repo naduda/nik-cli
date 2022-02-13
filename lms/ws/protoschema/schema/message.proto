@@ -1,8 +1,8 @@
-syntax="proto3";
+syntax = "proto3";
 
 package ws;
 
-option go_package="nik-cli/lms/ws/protoschema";
+option go_package = "nik-cli/lms/ws/protoschema";
 
 message Message {
   int32 apiVersion = 1;
@@ -36,7 +36,7 @@ message Message {
     NDC_SUBMIT_PRIORITY_COMMAND = 32;
     PRIORITY_ACTIVATION = 33;
     PROPORTIONAL_COMMAND_EXECUTION = 34;
-      PROPORTIONAL_ACTIVATION = 35;
+    PROPORTIONAL_ACTIVATION = 35;
     PROPORTIONAL_ACTIVATION_AUDIT = 36;
     MARKET_AREA_OPERATIONAL_SAFETY_SUMMARY = 39;
     OPERATIONAL_SAFETY_ALLOWANCE = 40;

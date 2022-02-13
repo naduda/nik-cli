@@ -69,11 +69,13 @@ func (r *LmsWebsocket) Connect() error {
 			log.Println(err)
 			return
 		}
+		r.Logger.Println(m.GetType())
 		var p proto.Message = nil
 		switch m.GetType() {
 		case protoschema.Message_HEARTBEAT:
 			p = &protoschema.Heartbeat{}
 		case protoschema.Message_ACTIVATION:
+			p = &protoschema.Activation{}
 		case protoschema.Message_PROPORTIONAL_ACTIVATION:
 			p = &protoschema.Activation{}
 		case protoschema.Message_ACTIVATION_AUDIT:
