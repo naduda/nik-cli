@@ -172,6 +172,8 @@ func historyList(date string, cookies []*http.Cookie, refresh bool) ([]model.His
 	if err != nil {
 		return nil, err
 	}
+	// removing trash from content to prevent decode xml error - in other way Rows is nil
+	content = content[strings.Index(content, "<table"):]
 
 	h := model.Table{}
 	err = xml.NewDecoder(bytes.NewBuffer([]byte(content))).Decode(&h)
